@@ -1,8 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import maplibregl from 'maplibre-gl';
+
   import type { StyleSpecification } from 'maplibre-gl';
-  import style from '$lib/map/style.json';
+  import styleJson from './style.json';
 
   import 'maplibre-gl/dist/maplibre-gl.css';
   import type { FakeUser } from '$lib/data/fakeUsers';
@@ -56,10 +57,12 @@
   }
 
   onMount(() => {
-    const map = new maplibregl.Map({
-    container: 'map',
-    style: style as StyleSpecification
-  });
+    map = new maplibregl.Map({
+      container,
+      style: styleJson as unknown as StyleSpecification,
+      center: [0, 0],
+      zoom: 2
+    });
 
     map.on('load', () => {
       mapReady = true;
