@@ -1,6 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import maplibregl from 'maplibre-gl';
+  import type { StyleSpecification } from 'maplibre-gl';
+  import style from '$lib/map/style.json';
+
   import 'maplibre-gl/dist/maplibre-gl.css';
   import type { FakeUser } from '$lib/data/fakeUsers';
 
@@ -39,7 +42,8 @@
       element.title = user.name;
       element.setAttribute('aria-label', `Open profile for ${user.name}`);
 
-      element.addEventListener('click', () => {
+      element.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevents the map from intercepting the click
         onUserSelect?.(user);
       });
 
@@ -52,12 +56,10 @@
   }
 
   onMount(() => {
-    map = new maplibregl.Map({
-      container,
-      style: 'https://demotiles.maplibre.org/style.json',
-      center: [12.5, 41.9],
-      zoom: 13
-    });
+    const map = new maplibregl.Map({
+    container: 'map',
+    style: style as StyleSpecification
+  });
 
     map.on('load', () => {
       mapReady = true;
@@ -71,8 +73,6 @@
   });
 
   $effect(() => {
-    users;
-
     if (mapReady) {
       syncMarkers();
     }
