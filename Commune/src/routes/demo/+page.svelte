@@ -1,17 +1,23 @@
 <script lang="ts">
+
 	import MapView from '$lib/components/MapView.svelte';
 	import UserPopup from '$lib/components/UserPopup.svelte';
 	import { fakeUsers, type FakeUser } from '$lib/data/fakeUsers';
 
 	let selectedUser = $state<FakeUser | null>(null);
 
-	function handleUserSelect(user: FakeUser) {
+	function handleUserSelect(user: FakeUser)
+	{
+		console.log('handleUserSelect called with', user);
 		selectedUser = user;
+		console.log('selectedUser is now', selectedUser);
 	}
 
-	function closePopup() {
+	function closePopup()
+	{
 		selectedUser = null;
 	}
+
 </script>
 
 <svelte:head>
@@ -37,17 +43,21 @@
 </section>
 
 <style>
-	.page {
+
+	.page
+	{
 		display: grid;
 		gap: 1rem;
 		padding: 1.25rem;
 	}
 
-	.hero {
+	.hero
+	{
 		max-width: 42rem;
 	}
 
-	.eyebrow {
+	.eyebrow
+	{
 		margin: 0 0 0.35rem;
 		text-transform: uppercase;
 		letter-spacing: 0.16em;
@@ -55,15 +65,18 @@
 		color: #5d7ea8;
 	}
 
-	h1 {
+	h1
+	{
 		margin: 0;
 		font-size: clamp(2rem, 5vw, 3.3rem);
 		line-height: 1;
 	}
 
-	p {
+	p
+	{
 		margin: 0.8rem 0 0;
 		color: #4a5e78;
 		max-width: 60ch;
 	}
+
 </style>

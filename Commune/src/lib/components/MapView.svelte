@@ -20,7 +20,7 @@
   let container: HTMLDivElement;
   let map = $state<maplibregl.Map | undefined>();
   let mapReady = $state(false);
-  let markers = $state<maplibregl.Marker[]>([]);
+  let markers: maplibregl.Marker[] = [];
 
   function clearMarkers()
   {
@@ -53,7 +53,7 @@
 
       element.addEventListener('click', (e) =>
       {
-        console.log('mousedown on dot');
+        //console.log('mousedown on dot');
         e.stopPropagation(); // Prevents the map from intercepting the click
         onUserSelect?.(user);
       });
@@ -72,8 +72,7 @@
       container,
       style: styleJson as unknown as StyleSpecification,
       center: [0, 0],
-      zoom: 2,
-      dragPan: false
+      zoom: 2
     });
 
     map.on('load', () =>
