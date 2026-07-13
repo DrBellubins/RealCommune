@@ -192,6 +192,8 @@
 			}
 			catch
 			{
+				// If the component updates out from under this queued recenter,
+				// dropping the pending request is safer than forcing a stale pan.
 				return;
 			}
 

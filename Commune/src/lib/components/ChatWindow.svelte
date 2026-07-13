@@ -31,7 +31,7 @@
 	let draft = $state('');
 	let position = $state({ x: 0, y: 0 });
 	let chatWindowElement = $state<HTMLElement | null>(null);
-	let geometryReportFrameId: number | null = null;
+	let geometryReportFrameId: ReturnType<typeof requestAnimationFrame> | null = null;
 	let geometryVersion = 0;
 
 	function reportGeometry()
