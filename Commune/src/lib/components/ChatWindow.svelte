@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import type maplibregl from 'maplibre-gl';
 
 	import type { ChatMessage } from '$lib/data/chat';
@@ -11,8 +11,7 @@
 		contact,
 		messages,
 		onClose,
-		onSend,
-		onGeometryChange
+		onSend
 	} = $props<{
 		map: maplibregl.Map | null;
 		client: MapUser;
@@ -20,71 +19,16 @@
 		messages: ChatMessage[];
 		onClose: () => void;
 		onSend: (text: string) => void;
-		onGeometryChange?: (geometry: {
-			contactId: string;
-			version: number;
-			center: { x: number; y: number };
-			size: { width: number; height: number };
-		} | null) => void;
 	}>();
 
 	let draft = $state('');
 	let position = $state({ x: 0, y: 0 });
-	let chatWindowElement = $state<HTMLElement | null>(null);
-	let geometryReportFrameId: ReturnType<typeof requestAnimationFrame> | null = null;
-	let geometryVersion = 0;
-
-	function reportGeometry()
-	{
-		if (!map || !contact || !chatWindowElement)
-		{
-			onGeometryChange?.(null);
-			return;
-		}
-
-		const mapRect = map.getContainer().getBoundingClientRect();
-		const chatRect = chatWindowElement.getBoundingClientRect();
-
-		geometryVersion += 1;
-
-		onGeometryChange?.({
-			contactId: contact.id,
-			version: geometryVersion,
-			center: {
-				x: chatRect.left - mapRect.left + chatRect.width / 2,
-				y: chatRect.top - mapRect.top + chatRect.height / 2
-			},
-			size: {
-				width: chatRect.width,
-				height: chatRect.height
-			}
-		});
-	}
-
-	function queueGeometryReport()
-	{
-		if (typeof window === 'undefined')
-		{
-			return;
-		}
-
-		if (geometryReportFrameId !== null)
-		{
-			cancelAnimationFrame(geometryReportFrameId);
-		}
-
-		geometryReportFrameId = requestAnimationFrame(() =>
-		{
-			geometryReportFrameId = null;
-			reportGeometry();
-		});
-	}
+	let container = $state<HTMLElement | null>(null);
 
 	function updatePosition()
 	{
 		if (!map || !contact)
 		{
-			onGeometryChange?.(null);
 			return;
 		}
 
@@ -94,8 +38,6 @@
 			x: point.x,
 			y: point.y
 		};
-
-		queueGeometryReport();
 	}
 
 	function handleSubmit()
@@ -111,11 +53,27 @@
 		draft = '';
 	}
 
+	function handleClickOutside(event: MouseEvent)
+	{
+		if (!container)
+		{
+			return;
+		}
+
+		const target = event.target;
+
+		if (target instanceof Node && container.contains(target))
+		{
+			return;
+		}
+
+		onClose();
+	}
+
 	$effect(() =>
 	{
 		if (!map || !contact)
 		{
-			onGeometryChange?.(null);
 			return;
 		}
 
@@ -143,42 +101,25 @@
 		};
 	});
 
-	$effect(() =>
+	onMount(() =>
 	{
-		if (!chatWindowElement || !contact)
-		{
-			return;
-		}
-
-		const observer = new ResizeObserver(() =>
-		{
-			queueGeometryReport();
-		});
-
-		observer.observe(chatWindowElement);
-		queueGeometryReport();
+		document.addEventListener('mousedown', handleClickOutside);
 
 		return () =>
 		{
-			observer.disconnect();
+			document.removeEventListener('mousedown', handleClickOutside);
 		};
 	});
 
 	onDestroy(() =>
 	{
-		if (geometryReportFrameId !== null)
-		{
-			cancelAnimationFrame(geometryReportFrameId);
-		}
-
-		onGeometryChange?.(null);
 		draft = '';
 	});
 </script>
 
 {#if contact}
 	<section
-		bind:this={chatWindowElement}
+		bind:this={container}
 		class="chat-window"
 		aria-label={`Chat with ${contact.name}`}
 		style={`left: ${position.x}px; top: ${position.y}px;`}
@@ -229,7 +170,6 @@
 				id="message"
 				bind:value={draft}
 				placeholder={`Message ${contact.name}`}
-				autocomplete="off"
 			/>
 
 			<button type="submit">Send</button>

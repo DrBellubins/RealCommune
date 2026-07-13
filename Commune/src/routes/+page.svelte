@@ -80,10 +80,10 @@
 		});
 	}
 
-	function handleChatWindowGeometryChange(geometry: ChatWindowGeometry | null)
+	/*function handleChatWindowGeometryChange(geometry: ChatWindowGeometry | null)
 	{
 		chatWindowGeometry = geometry;
-	}
+	}*/
 
 	function getSelectedUserGeometryVersion()
 	{
@@ -231,7 +231,7 @@
 			client={testClient}
 			contact={selectedUser}
 			messages={selectedMessages}
-			onGeometryChange={handleChatWindowGeometryChange}
+			//onGeometryChange={handleChatWindowGeometryChange}
 			onClose={closeChat}
 			onSend={sendMessage}
 		/>
