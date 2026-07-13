@@ -226,30 +226,6 @@
 			onUserSelect={handleUserSelect}
 		/>
 
-		<div class="overlay-panel">
-			<header class="hero">
-				<p class="eyebrow">Demo surface</p>
-				<h1>Map messaging prototype</h1>
-				<p>
-					Select a user dot to start a direct message conversation as TestClient. The chat
-					window stays anchored above the selected user on the map.
-				</p>
-			</header>
-
-			<nav class="friend-list" aria-label="Friends">
-				{#each fakeUsers as user (user.id)}
-					<button
-						type="button"
-						class:selected={selectedUser?.id === user.id}
-						onclick={() => handleUserSelect(user)}
-					>
-						<span>{user.name}</span>
-						<small>{user.locationLabel}</small>
-					</button>
-				{/each}
-			</nav>
-		</div>
-
 		<ChatWindow
 			{map}
 			client={testClient}
@@ -295,97 +271,5 @@
 		width: 100%;
 		height: 100%;
 		overflow: hidden;
-	}
-
-	.overlay-panel
-	{
-		position: absolute;
-		top: 1rem;
-		left: 1rem;
-		z-index: 20;
-		display: grid;
-		gap: 0.75rem;
-		width: min(22rem, calc(100vw - 2rem));
-	}
-
-	.hero
-	{
-		padding: 1rem 1rem 1.1rem;
-		border: 1px solid rgba(167, 197, 255, 0.2);
-		border-radius: 1rem;
-		background: rgba(9, 17, 29, 0.72);
-		color: #edf4ff;
-		backdrop-filter: blur(16px);
-	}
-
-	.eyebrow
-	{
-		margin: 0 0 0.35rem;
-		color: #8db7ff;
-		font-size: 0.74rem;
-		letter-spacing: 0.16em;
-		text-transform: uppercase;
-	}
-
-	h1
-	{
-		margin: 0;
-		font-size: clamp(1.8rem, 4vw, 2.8rem);
-		line-height: 0.95;
-	}
-
-	.hero p:not(.eyebrow)
-	{
-		max-width: 32ch;
-		margin: 0.8rem 0 0;
-		color: rgba(237, 244, 255, 0.86);
-	}
-
-	.friend-list
-	{
-		display: grid;
-		gap: 0.5rem;
-	}
-
-	.friend-list button
-	{
-		display: grid;
-		gap: 0.1rem;
-		padding: 0.75rem 0.9rem;
-		border: 1px solid rgba(167, 197, 255, 0.18);
-		border-radius: 0.9rem;
-		background: rgba(9, 17, 29, 0.62);
-		color: #edf4ff;
-		cursor: pointer;
-		font: inherit;
-		text-align: left;
-		backdrop-filter: blur(16px);
-	}
-
-	.friend-list button.selected
-	{
-		border-color: rgba(107, 173, 255, 0.95);
-		background: rgba(22, 136, 255, 0.3);
-	}
-
-	.friend-list button small
-	{
-		color: rgba(188, 208, 239, 0.88);
-		font-size: 0.76rem;
-	}
-
-	@media (max-width: 40rem)
-	{
-		.overlay-panel
-		{
-			width: min(20rem, calc(100vw - 1rem));
-			top: 0.5rem;
-			left: 0.5rem;
-		}
-
-		.hero
-		{
-			padding: 0.85rem 0.9rem 1rem;
-		}
 	}
 </style>
