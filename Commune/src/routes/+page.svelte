@@ -54,10 +54,7 @@
 
 	function queueChatCentering(requireFreshGeometry = false)
 	{
-		const currentGeometryVersion =
-			selectedUser && chatWindowGeometry?.contactId === selectedUser.id
-				? chatWindowGeometry.version
-				: 0;
+		const currentGeometryVersion = getSelectedUserGeometryVersion();
 
 		requestedGeometryVersion = requireFreshGeometry
 			? currentGeometryVersion + 1
@@ -86,6 +83,32 @@
 	function handleChatWindowGeometryChange(geometry: ChatWindowGeometry | null)
 	{
 		chatWindowGeometry = geometry;
+	}
+
+	function getSelectedUserGeometryVersion()
+	{
+		if (!selectedUser || !chatWindowGeometry)
+		{
+			return 0;
+		}
+
+		if (chatWindowGeometry.contactId !== selectedUser.id)
+		{
+			return 0;
+		}
+
+		return chatWindowGeometry.version;
+	}
+
+	function canCenterSelectedChat()
+	{
+		return Boolean(
+			centerChatRequest &&
+			selectedUser &&
+			chatWindowGeometry &&
+			chatWindowGeometry.contactId === selectedUser.id &&
+			chatWindowGeometry.version >= requestedGeometryVersion
+		);
 	}
 
 	function handleUserSelect(user: MapUser)
@@ -154,13 +177,7 @@
 
 	$effect(() =>
 	{
-		if (
-			!centerChatRequest ||
-			!selectedUser ||
-			!chatWindowGeometry ||
-			chatWindowGeometry.contactId !== selectedUser.id ||
-			chatWindowGeometry.version < requestedGeometryVersion
-		)
+		if (!canCenterSelectedChat())
 		{
 			return;
 		}
@@ -169,13 +186,7 @@
 
 		tick().then(() =>
 		{
-			if (
-				centerChatRequest !== requestId ||
-				!selectedUser ||
-				!chatWindowGeometry ||
-				chatWindowGeometry.contactId !== selectedUser.id ||
-				chatWindowGeometry.version < requestedGeometryVersion
-			)
+			if (centerChatRequest !== requestId || !canCenterSelectedChat())
 			{
 				return;
 			}
