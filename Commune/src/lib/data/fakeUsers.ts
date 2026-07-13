@@ -1,15 +1,26 @@
-export type FakeUser = {
+export type MapUser = {
 	id: string;
 	name: string;
 	role: string;
-	status: string;
+	status: 'online' | 'available' | 'away' | 'offline';
 	latitude: number;
 	longitude: number;
 	locationLabel: string;
 	preview: string;
 };
 
-export const fakeUsers: FakeUser[] = [
+export const testClient: MapUser = {
+	id: 'test-client',
+	name: 'TestClient',
+	role: 'Test client',
+	status: 'online',
+	latitude: 0,
+	longitude: 0,
+	locationLabel: '0, 0',
+	preview: 'The local test account used for prototype conversations.'
+};
+
+export const fakeUsers: MapUser[] = [
 	{
 		id: 'ada-marin',
 		name: 'Ada Marin',
