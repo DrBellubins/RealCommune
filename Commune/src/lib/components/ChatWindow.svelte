@@ -392,6 +392,12 @@
 		font: inherit;
 	}
 
+    input:focus
+    {
+	    outline: 2px solid #009edd;
+	    outline-offset: 2px;
+    }
+
 	form button
 	{
 		padding: 0.65rem 0.8rem;
