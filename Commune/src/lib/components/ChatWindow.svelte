@@ -1,9 +1,12 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
 	import { onDestroy } from 'svelte';
 	import type maplibregl from 'maplibre-gl';
 
 	import type { ChatMessage } from '$lib/data/chat';
 	import type { MapUser } from '$lib/data/fakeUsers';
+
+	let chatWindow: HTMLDivElement | undefined;
 
 	let {
 		map,
@@ -111,6 +114,29 @@
 		draft = '';
 	}
 
+    function handlePointerDown(event: PointerEvent)
+	{
+		if (!chatWindow)
+		{
+			return;
+		}
+
+		if (!chatWindow.contains(event.target as Node))
+		{
+			onClose();
+		}
+	}
+
+	onMount(() =>
+	{
+		document.addEventListener('pointerdown', handlePointerDown);
+
+		return () =>
+		{
+			document.removeEventListener('pointerdown', handlePointerDown);
+		};
+	});
+
 	$effect(() =>
 	{
 		if (!map || !contact)
@@ -177,6 +203,18 @@
 </script>
 
 {#if contact}
+    <div bind:this={chatWindow} class="chat-window">
+		<header>
+			<div>
+				<p>Direct message</p>
+				<h2>{contact.name}</h2>
+			</div>
+
+			<button type="button" onclick={onclose} aria-label={`Close chat with ${contact.name}`}>
+				×
+			</button>
+		</header>
+        
 	<section
 		bind:this={chatWindowElement}
 		class="chat-window"
@@ -235,6 +273,7 @@
 			<button type="submit">Send</button>
 		</form>
 	</section>
+    </div>
 {/if}
 
 <style>
