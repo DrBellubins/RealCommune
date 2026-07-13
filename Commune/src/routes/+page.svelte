@@ -12,6 +12,12 @@
 	} from '$lib/data/chat';
 	import { fakeUsers, testClient, type MapUser } from '$lib/data/fakeUsers';
 
+	// Pixel offset applied when centering on a selected user, so the chat
+	// window (which is anchored above the marker) ends up centered in view
+	// instead of the marker itself.
+	const CHAT_CENTER_OFFSET: [number, number] = [0, -160];
+	const CHAT_CENTER_DURATION_MS = 700;
+
 	let map = $state<maplibregl.Map | null>(null);
 	let selectedUser = $state<MapUser | null>(null);
 	let conversations = $state<ConversationMessages>(initialConversations);
@@ -33,9 +39,25 @@
 		map = readyMap;
 	}
 
+	function centerOnUser(user: MapUser)
+	{
+		if (!map)
+		{
+			return;
+		}
+
+		map.easeTo({
+			center: [user.longitude, user.latitude],
+			offset: CHAT_CENTER_OFFSET,
+			duration: CHAT_CENTER_DURATION_MS,
+			easing: (t) => t * (2 - t)
+		});
+	}
+
 	function handleUserSelect(user: MapUser)
 	{
 		selectedUser = user;
+		centerOnUser(user);
 	}
 
 	function closeChat()
