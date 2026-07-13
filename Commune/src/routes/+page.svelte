@@ -184,8 +184,17 @@
 
 		const requestId = centerChatRequest;
 
-		tick().then(() =>
+		(async () =>
 		{
+			try
+			{
+				await tick();
+			}
+			catch
+			{
+				return;
+			}
+
 			if (centerChatRequest !== requestId || !canCenterSelectedChat())
 			{
 				return;
@@ -193,7 +202,7 @@
 
 			centerChatRequest = 0;
 			centerOnChatWindow();
-		});
+		})();
 	});
 </script>
 
@@ -216,14 +225,14 @@
 		/>
 
 		<div class="overlay-panel">
-			<div class="hero">
+			<header class="hero">
 				<p class="eyebrow">Demo surface</p>
 				<h1>Map messaging prototype</h1>
 				<p>
 					Select a user dot to start a direct message conversation as TestClient. The chat
 					window stays anchored above the selected user on the map.
 				</p>
-			</div>
+			</header>
 
 			<nav class="friend-list" aria-label="Friends">
 				{#each fakeUsers as user (user.id)}

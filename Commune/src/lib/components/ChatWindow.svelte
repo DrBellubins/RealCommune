@@ -51,8 +51,8 @@
 			contactId: contact.id,
 			version: geometryVersion,
 			center: {
-				x: chatRect.left - mapRect.left + (chatRect.width / 2),
-				y: chatRect.top - mapRect.top + (chatRect.height / 2)
+				x: chatRect.left - mapRect.left + chatRect.width / 2,
+				y: chatRect.top - mapRect.top + chatRect.height / 2
 			},
 			size: {
 				width: chatRect.width,
