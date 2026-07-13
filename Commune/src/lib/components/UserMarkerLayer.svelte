@@ -26,16 +26,16 @@
 		markers = [];
 	}
 
-	function renderMarkers()
+	function renderMarkers(currentMap: maplibregl.Map | null, currentUsers: MapUser[])
 	{
-		if (!map)
+		clearMarkers();
+
+		if (!currentMap)
 		{
 			return;
 		}
 
-		clearMarkers();
-
-		for (const user of users)
+		for (const user of currentUsers)
 		{
 			const element = document.createElement('button');
 
@@ -60,7 +60,7 @@
 				anchor: 'center'
 			})
 				.setLngLat([user.longitude, user.latitude])
-				.addTo(map);
+				.addTo(currentMap);
 
 			markers.push(marker);
 		}
@@ -68,9 +68,7 @@
 
 	$effect(() =>
 	{
-		map;
-		users;
-		renderMarkers();
+		renderMarkers(map, users);
 	});
 
 	onDestroy(() =>
@@ -78,24 +76,3 @@
 		clearMarkers();
 	});
 </script>
-
-<style>
-	:global(.user-dot)
-	{
-		width: 18px;
-		height: 18px;
-		padding: 0;
-		border: 2px solid rgba(255, 255, 255, 0.95);
-		border-radius: 50%;
-		background: radial-gradient(circle at 30% 30%, #9fe0ff, #2e7bff);
-		box-shadow: 0 0 0 8px rgba(72, 145, 255, 0.2);
-		cursor: pointer;
-	}
-
-	:global(.user-dot:hover),
-	:global(.user-dot:focus-visible)
-	{
-		transform: scale(1.12);
-		outline: none;
-	}
-</style>

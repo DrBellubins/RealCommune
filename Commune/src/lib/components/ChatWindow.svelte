@@ -92,7 +92,6 @@
 {#if contact}
 	<section
 		class="chat-window"
-		role="dialog"
 		aria-label={`Chat with ${contact.name}`}
 		style={`left: ${position.x}px; top: ${position.y}px;`}
 	>
