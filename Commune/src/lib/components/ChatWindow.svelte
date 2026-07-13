@@ -11,7 +11,8 @@
 		contact,
 		messages,
 		onClose,
-		onSend
+		onSend,
+		onGeometryChange
 	} = $props<{
 		map: maplibregl.Map | null;
 		client: MapUser;
@@ -19,15 +20,71 @@
 		messages: ChatMessage[];
 		onClose: () => void;
 		onSend: (text: string) => void;
+		onGeometryChange?: (geometry: {
+			contactId: string;
+			version: number;
+			center: { x: number; y: number };
+			size: { width: number; height: number };
+		} | null) => void;
 	}>();
 
 	let draft = $state('');
 	let position = $state({ x: 0, y: 0 });
+	let chatWindowElement = $state<HTMLElement | null>(null);
+	let geometryFrame = 0;
+	let geometryVersion = 0;
+
+	function reportGeometry()
+	{
+		if (!map || !contact || !chatWindowElement)
+		{
+			onGeometryChange?.(null);
+			return;
+		}
+
+		const mapRect = map.getContainer().getBoundingClientRect();
+		const chatRect = chatWindowElement.getBoundingClientRect();
+
+		geometryVersion += 1;
+
+		onGeometryChange?.({
+			contactId: contact.id,
+			version: geometryVersion,
+			center: {
+				x: chatRect.left - mapRect.left + (chatRect.width / 2),
+				y: chatRect.top - mapRect.top + (chatRect.height / 2)
+			},
+			size: {
+				width: chatRect.width,
+				height: chatRect.height
+			}
+		});
+	}
+
+	function queueGeometryReport()
+	{
+		if (typeof window === 'undefined')
+		{
+			return;
+		}
+
+		if (geometryFrame)
+		{
+			cancelAnimationFrame(geometryFrame);
+		}
+
+		geometryFrame = requestAnimationFrame(() =>
+		{
+			geometryFrame = 0;
+			reportGeometry();
+		});
+	}
 
 	function updatePosition()
 	{
 		if (!map || !contact)
 		{
+			onGeometryChange?.(null);
 			return;
 		}
 
@@ -37,6 +94,8 @@
 			x: point.x,
 			y: point.y
 		};
+
+		queueGeometryReport();
 	}
 
 	function handleSubmit()
@@ -56,6 +115,7 @@
 	{
 		if (!map || !contact)
 		{
+			onGeometryChange?.(null);
 			return;
 		}
 
@@ -83,14 +143,52 @@
 		};
 	});
 
+	$effect(() =>
+	{
+		if (!chatWindowElement || !contact)
+		{
+			return;
+		}
+
+		const observer = new ResizeObserver(() =>
+		{
+			queueGeometryReport();
+		});
+
+		observer.observe(chatWindowElement);
+		queueGeometryReport();
+
+		return () =>
+		{
+			observer.disconnect();
+		};
+	});
+
+	$effect(() =>
+	{
+		if (contact)
+		{
+			return;
+		}
+
+		onGeometryChange?.(null);
+	});
+
 	onDestroy(() =>
 	{
+		if (geometryFrame)
+		{
+			cancelAnimationFrame(geometryFrame);
+		}
+
+		onGeometryChange?.(null);
 		draft = '';
 	});
 </script>
 
 {#if contact}
 	<section
+		bind:this={chatWindowElement}
 		class="chat-window"
 		aria-label={`Chat with ${contact.name}`}
 		style={`left: ${position.x}px; top: ${position.y}px;`}
