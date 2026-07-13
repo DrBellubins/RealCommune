@@ -268,7 +268,14 @@
 	{
 		width: 100vw;
 		height: 100vh;
-		height: 100dvh;
+	}
+
+	@supports (height: 100dvh)
+	{
+		.page
+		{
+			height: 100dvh;
+		}
 	}
 
 	.map-shell
