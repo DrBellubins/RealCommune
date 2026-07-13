@@ -5,6 +5,8 @@
 	import type { ChatMessage } from '$lib/data/chat';
 	import type { MapUser } from '$lib/data/fakeUsers';
 
+    import { clickOutside } from '$lib/actions/ClickOutside';
+
 	let {
 		map,
 		client,
@@ -177,6 +179,7 @@
 </script>
 
 {#if contact}
+<div use:clickOutside={() => (contact = null)}>
 	<section
 		bind:this={chatWindowElement}
 		class="chat-window"
@@ -235,6 +238,7 @@
 			<button type="submit">Send</button>
 		</form>
 	</section>
+</div>
 {/if}
 
 <style>
