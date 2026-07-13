@@ -167,7 +167,7 @@
 
 		const requestId = centerChatRequest;
 
-		void tick().then(() =>
+		tick().then(() =>
 		{
 			if (
 				centerChatRequest !== requestId ||

@@ -31,7 +31,7 @@
 	let draft = $state('');
 	let position = $state({ x: 0, y: 0 });
 	let chatWindowElement = $state<HTMLElement | null>(null);
-	let geometryFrame = 0;
+	let geometryFrameId = 0;
 	let geometryVersion = 0;
 
 	function reportGeometry()
@@ -68,14 +68,14 @@
 			return;
 		}
 
-		if (geometryFrame)
+		if (geometryFrameId)
 		{
-			cancelAnimationFrame(geometryFrame);
+			cancelAnimationFrame(geometryFrameId);
 		}
 
-		geometryFrame = requestAnimationFrame(() =>
+		geometryFrameId = requestAnimationFrame(() =>
 		{
-			geometryFrame = 0;
+			geometryFrameId = 0;
 			reportGeometry();
 		});
 	}
@@ -164,21 +164,11 @@
 		};
 	});
 
-	$effect(() =>
-	{
-		if (contact)
-		{
-			return;
-		}
-
-		onGeometryChange?.(null);
-	});
-
 	onDestroy(() =>
 	{
-		if (geometryFrame)
+		if (geometryFrameId)
 		{
-			cancelAnimationFrame(geometryFrame);
+			cancelAnimationFrame(geometryFrameId);
 		}
 
 		onGeometryChange?.(null);
