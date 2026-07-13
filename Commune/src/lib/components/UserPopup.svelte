@@ -1,13 +1,6 @@
 <script lang="ts">
 	import type { FakeUser } from '$lib/data/fakeUsers';
 
-	type Message = {
-		id: string;
-		senderId: string;
-		text: string;
-		timestamp: Date;
-	};
-
 	let {
 		user,
 		onClose
@@ -15,27 +8,6 @@
 		user: FakeUser | null;
 		onClose: () => void;
 	}>();
-
-	let messages = $state<Message[]>([
-		{ id: '1', senderId: 'other', text: 'Hey there!', timestamp: new Date() },
-		{ id: '2', senderId: 'me', text: 'Hi! How are you?', timestamp: new Date() }
-	]);
-	let newMessage = $state('');
-	let showChat = $state(false);
-	const myId = 'me';
-
-	function sendMessage() {
-		if (!newMessage.trim()) return;
-		messages = [...messages, {
-			id: crypto.randomUUID(),
-			senderId: myId,
-			text: newMessage,
-			timestamp: new Date()
-		}];
-		newMessage = '';
-		// Auto scroll to bottom (simulated by Svelte's reactivity if we had a ref, 
-		// but for now we'll just rely on the DOM)
-	}
 </script>
 
 {#if user}
@@ -66,32 +38,16 @@
 			</dl>
 
 			<div class="actions">
-				<button type="button" class="primary" onclick={() => showChat = !showChat}>
-					{showChat ? 'Close Chat' : 'Chat'}
+				<button type="button" class="primary" disabled>
+					Message coming soon
 				</button>
 				<button type="button" class="secondary" onclick={onClose}>
 					Dismiss
 				</button>
 			</div>
-
-			{#if showChat}
-				<div class="chat-container">
-					<div class="messages-list">
-						{#each messages as msg}
-							<div class="message {msg.senderId === myId ? 'me' : 'other'}">
-								<div class="bubble">{msg.text}</div>
-							</div>
-						{/each}
-					</div>
-					<form class="input-area" onsubmit={(e) => { e.preventDefault(); sendMessage(); }}>
-						<input type="text" bind:value={newMessage} placeholder="Type a message..." />
-						<button type="submit">Send</button>
-					</form>
-				</div>
-			{/if}
 		</div>
 	</div>
-	{/if}
+{/if}
 
 <style>
 	.overlay {
