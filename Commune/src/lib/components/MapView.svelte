@@ -8,7 +8,8 @@
   import 'maplibre-gl/dist/maplibre-gl.css';
   import type { FakeUser } from '$lib/data/fakeUsers';
 
-  let {
+  let
+  {
     users = [],
     onUserSelect
   } = $props<{
@@ -21,29 +22,38 @@
   let mapReady = $state(false);
   let markers = $state<maplibregl.Marker[]>([]);
 
-  function clearMarkers() {
-    for (const marker of markers) {
+  function clearMarkers()
+  {
+    for (const marker of markers)
+    {
       marker.remove();
     }
 
     markers = [];
   }
 
-  function syncMarkers() {
-    if (!map) {
-      return;
-    }
+  function syncMarkers()
+  {
+    if (!map) { return; }
 
     clearMarkers();
 
-    for (const user of users) {
+    for (const user of users)
+    {
       const element = document.createElement('button');
       element.type = 'button';
       element.className = 'user-dot';
       element.title = user.name;
       element.setAttribute('aria-label', `Open profile for ${user.name}`);
 
-      element.addEventListener('click', (e) => {
+      element.addEventListener('pointerdown', (e) =>
+      {
+	      e.stopPropagation();
+      });
+
+      element.addEventListener('click', (e) =>
+      {
+        console.log('mousedown on dot');
         e.stopPropagation(); // Prevents the map from intercepting the click
         onUserSelect?.(user);
       });
@@ -56,36 +66,42 @@
     }
   }
 
-  onMount(() => {
+  onMount(() =>
+  {
     map = new maplibregl.Map({
       container,
       style: styleJson as unknown as StyleSpecification,
       center: [0, 0],
-      zoom: 2
+      zoom: 2,
+      dragPan: false
     });
 
-    map.on('load', () => {
+    map.on('load', () =>
+    {
       mapReady = true;
     });
 
-    return () => {
+    return () =>
+    {
       clearMarkers();
       mapReady = false;
       map?.remove();
     };
   });
 
-  $effect(() => {
-    if (mapReady) {
-      syncMarkers();
-    }
+  $effect(() =>
+  {
+    if (mapReady) { syncMarkers(); }
   });
+
 </script>
 
 <div bind:this={container} class="map"></div>
 
 <style>
-  :global(.user-dot) {
+
+  :global(.user-dot)
+  {
     width: 18px;
     height: 18px;
     border-radius: 50%;
@@ -96,14 +112,17 @@
     padding: 0;
   }
 
-  :global(.user-dot:hover) {
+  :global(.user-dot:hover)
+  {
     transform: scale(1.12);
   }
 
-  .map {
+  .map
+  {
     width: 100%;
     height: min(72vh, 44rem);
     border-radius: 12px;
     overflow: hidden;
   }
+
 </style>
