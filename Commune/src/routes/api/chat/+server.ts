@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from '../$types';
 import { loadConversation, saveMessage } from '$lib/server/db/ChatDB';
 
 export const GET: RequestHandler = async ({ url }) => {
