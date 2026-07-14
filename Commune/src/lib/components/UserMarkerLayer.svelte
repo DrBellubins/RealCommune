@@ -80,6 +80,7 @@
 <style>
 	:global(button.user-dot)
 	{
+		position: relative;
 		display: block;
 		box-sizing: border-box;
 		width: 18px;
@@ -90,8 +91,21 @@
 		appearance: none;
 		-webkit-appearance: none;
 		background: radial-gradient(circle at 30% 30%, #9fe0ff, #2e7bff);
-		box-shadow: 0 0 0 8px rgba(72, 145, 255, 0.2);
+		box-shadow: 0 0 0 16px rgba(72, 145, 255, 0.2);
 		cursor: pointer;
+		z-index: 0;
+	}
+
+	:global(button.user-dot::before)
+	{
+		content: '';
+		position: absolute;
+		top: -18px;
+		right: -18px;
+		bottom: -18px;
+		left: -18px;
+		border-radius: 50%;
+		z-index: -1;
 	}
 
 	:global(button.user-dot:hover),
@@ -99,6 +113,7 @@
 	{
 		transform: scale(1.12);
 		outline: none;
+		box-shadow: 0 0 0 16px rgba(72, 145, 255, 0.35);
 	}
 
 	:global(button.user-dot:focus-visible)
