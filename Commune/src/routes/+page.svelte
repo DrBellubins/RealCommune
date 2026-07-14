@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tick } from 'svelte';
+	import { tick, onMount } from 'svelte';
 	import type maplibregl from 'maplibre-gl';
 
 	import ChatWindow from '$lib/components/ChatWindow.svelte';
@@ -7,7 +7,6 @@
 	import UserMarkerLayer from '$lib/components/UserMarkerLayer.svelte';
 	import {
 		getConversationId,
-		initialConversations,
 		type ChatMessage,
 		type ConversationMessages
 	} from '$lib/data/chat';
@@ -18,58 +17,60 @@
 	type ChatWindowGeometry = {
 		contactId: string;
 		version: number;
-		center: {
-			x: number;
-			y: number;
-		};
-		size: {
-			width: number;
-			height: number;
-		};
+		center: { x: number; y: number };
+		size: { width: number; height: number };
 	};
 
 	let map = $state<maplibregl.Map | null>(null);
 	let selectedUser = $state<MapUser | null>(null);
-	let conversations = $state<ConversationMessages>(initialConversations);
+	let conversations = $state<ConversationMessages>({});
 	let chatWindowGeometry = $state<ChatWindowGeometry | null>(null);
 	let centerChatRequest = $state(0);
 	let requestedGeometryVersion = $state(0);
+	//let loading = $state(true);
 
-	let selectedMessages = $derived.by(() =>
-	{
-		if (!selectedUser)
-		{
-			return [];
-		}
-
+	let selectedMessages = $derived.by(() => {
+		if (!selectedUser) return [];
 		const conversationId = getConversationId(testClient.id, selectedUser.id);
-
 		return conversations[conversationId] ?? [];
 	});
 
-	function handleMapReady(readyMap: maplibregl.Map)
-	{
+	/* ── Load persisted conversations on mount ─────────────────── */
+
+	onMount(async () => {
+		const all: ConversationMessages = {};
+
+		for (const user of fakeUsers) {
+			const conversationId = getConversationId(testClient.id, user.id);
+			try {
+				const res = await fetch(`/api/chat?conversationId=${encodeURIComponent(conversationId)}`);
+				all[conversationId] = await res.json();
+			} catch (err) {
+				console.warn(`Failed to load conversation ${conversationId}`, err);
+			}
+		}
+
+		conversations = all;
+		//loading = false;
+	});
+
+
+	/* ── Map / chat wiring ─────────────────────────────────────── */
+
+	function handleMapReady(readyMap: maplibregl.Map) {
 		map = readyMap;
 	}
 
-	function queueChatCentering(requireFreshGeometry = false)
-	{
+	function queueChatCentering(requireFreshGeometry = false) {
 		const currentGeometryVersion = getSelectedUserGeometryVersion();
-
 		requestedGeometryVersion = requireFreshGeometry
 			? currentGeometryVersion + 1
 			: currentGeometryVersion;
-
 		centerChatRequest += 1;
 	}
 
-	function centerOnChatWindow()
-	{
-		if (!map || !selectedUser || !chatWindowGeometry)
-		{
-			return;
-		}
-
+	function centerOnChatWindow() {
+		if (!map || !selectedUser || !chatWindowGeometry) return;
 		map.easeTo({
 			center: map.unproject([
 				chatWindowGeometry.center.x,
@@ -80,28 +81,17 @@
 		});
 	}
 
-	function handleChatWindowGeometryChange(geometry: ChatWindowGeometry | null)
-	{
+	function handleChatWindowGeometryChange(geometry: ChatWindowGeometry | null) {
 		chatWindowGeometry = geometry;
 	}
 
-	function getSelectedUserGeometryVersion()
-	{
-		if (!selectedUser || !chatWindowGeometry)
-		{
-			return 0;
-		}
-
-		if (chatWindowGeometry.contactId !== selectedUser.id)
-		{
-			return 0;
-		}
-
+	function getSelectedUserGeometryVersion() {
+		if (!selectedUser || !chatWindowGeometry) return 0;
+		if (chatWindowGeometry.contactId !== selectedUser.id) return 0;
 		return chatWindowGeometry.version;
 	}
 
-	function canCenterSelectedChat()
-	{
+	function canCenterSelectedChat() {
 		return Boolean(
 			centerChatRequest &&
 			selectedUser &&
@@ -111,33 +101,27 @@
 		);
 	}
 
-	function handleUserSelect(user: MapUser)
-	{
+	function handleUserSelect(user: MapUser) {
 		const isSameUser = selectedUser?.id === user.id;
-
 		selectedUser = user;
 		queueChatCentering(!isSameUser);
 	}
 
-	function closeChat()
-	{
+	function closeChat() {
 		selectedUser = null;
 		chatWindowGeometry = null;
 		centerChatRequest = 0;
 		requestedGeometryVersion = 0;
 	}
 
-	function sendMessage(text: string)
-	{
-		if (!selectedUser)
-		{
-			return;
-		}
+	async function sendMessage(text: string) {
+		if (!selectedUser) return;
 
 		const conversationId = getConversationId(testClient.id, selectedUser.id);
+		const messageId = crypto.randomUUID();
 
 		const message: ChatMessage = {
-			id: crypto.randomUUID(),
+			id: messageId,
 			senderId: testClient.id,
 			recipientId: selectedUser.id,
 			text,
@@ -151,62 +135,45 @@
 			...conversations,
 			[conversationId]: [...(conversations[conversationId] ?? []), message]
 		};
+
+		fetch('/api/chat', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				id: messageId,
+				conversationId,
+				senderId: testClient.id,
+				recipientId: selectedUser.id,
+				text,
+				sentAt: message.sentAt
+			})
+		}).catch((err) => console.error('Failed to save message', err));
 	}
 
-	$effect(() =>
-	{
-		if (!map || !selectedUser)
-		{
-			return;
-		}
+	/* ── Map resize handler ────────────────────────────────────── */
 
+	$effect(() => {
+		if (!map || !selectedUser) return;
 		const currentMap = map;
-
-		const handleResize = () =>
-		{
-			queueChatCentering(true);
-		};
-
+		const handleResize = () => queueChatCentering(true);
 		currentMap.on('resize', handleResize);
-
-		return () =>
-		{
-			currentMap.off('resize', handleResize);
-		};
+		return () => currentMap.off('resize', handleResize);
 	});
 
-	$effect(() =>
-	{
-		if (!canCenterSelectedChat())
-		{
-			return;
-		}
+	/* ── Center-on-chat effect ─────────────────────────────────── */
 
+	$effect(() => {
+		if (!canCenterSelectedChat()) return;
 		const requestId = centerChatRequest;
-
-		(async () =>
-		{
-			try
-			{
-				await tick();
-			}
-			catch
-			{
-				// If the component updates out from under this queued recenter,
-				// dropping the pending request is safer than forcing a stale pan.
-				return;
-			}
-
-			if (centerChatRequest !== requestId || !canCenterSelectedChat())
-			{
-				return;
-			}
-
+		(async () => {
+			try { await tick(); } catch { return; }
+			if (centerChatRequest !== requestId || !canCenterSelectedChat()) return;
 			centerChatRequest = 0;
 			centerOnChatWindow();
 		})();
 	});
 </script>
+
 
 <svelte:head>
 	<title>Commune map prototype</title>

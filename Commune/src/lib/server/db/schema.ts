@@ -6,4 +6,15 @@ export const task = sqliteTable('task', {
 	priority: integer('priority').notNull().default(1)
 });
 
-export *  from './auth.schema';
+/* ── Chat messages ─────────────────────────────────────────────── */
+
+export const chatMessage = sqliteTable('chatMessage', {
+	id:         text('id').primaryKey(),
+	conversationId: text('conversation_id').notNull(),   // e.g. "ada-marin:test-client"
+	senderId:   text('sender_id').notNull(),
+	recipientId: text('recipient_id').notNull(),
+	text:       text('text').notNull(),
+	sentAt:     text('sent_at').notNull()
+});
+
+export * from './auth.schema';
