@@ -1,3 +1,0 @@
-domains:
-  - path: ./Commune
-    permissions: [read, find, grep, ls]
