@@ -1,1 +1,0 @@
-This directory does not have write access. Give any code changes/snippets to the user directly, while explaining what they are for, and where they should go.

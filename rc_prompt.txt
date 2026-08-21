@@ -1,0 +1,73 @@
+Instructions:
+Write a comprehensive (Github markdown) design checklist, and write it to /Docs/TODO.md
+
+Write items in order of most biggest effect and most pertinent to
+the current code base.
+
+Verbiage:
+User1 - The current user
+User2/Other users - Users other than the current user
+Interaction radius - The radius where instant messaging, vicinity notifications, etc happen
+Dots - User dots that can be clicked on to open instant messaging window.
+
+Description:
+I am creating a social media platform that primarily functions with maps
+and geolocation.
+
+The basic functionality is the users can't friend people over the internet,
+they have to be within the interaction zone (for now is 25 miles). Once
+friended they can't chat at any distance.
+
+Also, other users who are not in your friends list that you end up being
+around often, and for extended periods of time, show up as grey dots,
+with no name (for anonymity). The user can optionally reach out to the
+other, and can optionally choose to share their name or not.
+
+There are two sections:
+Map - The main map where user dots, and events show up.
+Contacts - The page where even if contacts aren't on the map (outside
+of the radius), they can still be direct messaged.
+
+The social media platform doesn't have a static "friends" system,
+instead it has a loose contacts of people you know, which you the user
+can optionally group into custom groups (example: Work friends,
+acquaintances, basketball bros, family, close family, etc). These groups,
+are not told to other users, and are just a way to keep contacts organized.
+
+There will be a block system, by which User1 can block User2,
+which will notify User1 whenever User2 is within the interaction radius.
+User2 is never notified that they've been blocked, that is up to User1 to
+disclose.
+
+There will be a Do Not Disturb mode, which will prevent other users from
+being notified when User1 enters their interaction radius.
+
+The app will primarily be phone-based, in order to have proper geolocation
+services. Geolocation will be grabbe infrequently in the background while
+the app isn't running.
+
+Details:
+Contact icons and colors can be chosen by User1, with the exeption of
+green (shown on the map).
+
+Event icons are always green and are based on the type of
+event (concert, fair, club, sports game, etc).
+
+People you've been around often and for long periods of
+time (neighbors, coworkers, etc) show up as gray dots.
+
+The friend interaction radius will be 25 miles.
+The neighbor interaction radius will be 1 mile.
+
+Users outside of the interaction radius don't show up on the map.
+
+The interaction radius between contacts can combine so that if they
+are < 50 miles apart, they still show up on the map, but don't notify
+User1 till they are within 25 miles of eachother.
+
+Users are only notified of other user's presence if they're not
+driving/flying (needs automatic detection, no reliance on airplane mode).
+
+Events:
+Events can only be created by special "Event Organizer" accounts, which
+can only be added by Commune, the company.
