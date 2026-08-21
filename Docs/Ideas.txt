@@ -1,0 +1,36 @@
+- THIS DOCUMENT IS OUTDATED -
+
+~ MAPS ~
+Other people are shown as dots on the map, clicking on them can open direct messages (only if friends).
+
+Friends are shown as blue dots.
+Events are shown as green dots.
+People you've been around often & for long periods of time (neighbors, coworkers, etc) show up as gray dots.
+
+~ INTERACTION ~
+The friend interaction radius will be 25 miles.
+The neighbor interaction radius will be 1 mile.
+
+The interaction radius between friends can combine so that if friends are < 50 miles apart, they still show
+up on the map.
+
+If you're within the radius of interaction, friends only are notified of eachothers presence if they're not
+driving/flying.
+
+Speech bubbles should be the same color, as to not place importance on either the user's messages, or
+their friends's messages.
+
+~ FRIENDS SECTION ~
+Friends section only works within 20 meters (because of gps limitations).
+Friend requests only show first names, without profile pictures (to mitigate stalking).
+
+~ TECHNICAL ~
+We can't rely on gps alone, accelerometer has to be taken into account to detect when a user is driving vs
+walking in a building.
+
+~ FINANCIAL ~
+Primarily donation based.
+Can be used as a donation platform like patreon for local buisnesses/events/outreaches can open donations,
+with Commune taking a cut. Each buisness/event/outreach on the map's overlay can have a little donation
+button in the top right.
+Democratic voting based on total donations of users. (no donations can't vote) to decide platform features.
