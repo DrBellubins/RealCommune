@@ -16,7 +16,8 @@ export default defineConfig({
 			adapter: adapter(),
 
 			typescript: {
-				config: (config) => {
+				config: (config) =>
+				{
 					config.include.push('../drizzle.config.ts');
 				}
 			}

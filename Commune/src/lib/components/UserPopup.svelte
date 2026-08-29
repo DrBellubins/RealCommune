@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { FakeUser } from '$lib/data/fakeUsers';
+	import type { MapUser } from '$lib/data/fakeUsers';
 
 	let {
 		user,
 		onClose
 	} = $props<{
-		user: FakeUser | null;
+		user: MapUser | null;
 		onClose: () => void;
 	}>();
 </script>

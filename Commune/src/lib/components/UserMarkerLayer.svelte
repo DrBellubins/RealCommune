@@ -55,12 +55,11 @@
 				onUserSelect(user);
 			});
 
-			const marker = new maplibregl.Marker({
+			const marker = new maplibregl.Marker(
+			{
 				element,
 				anchor: 'center'
-			})
-				.setLngLat([user.longitude, user.latitude])
-				.addTo(currentMap);
+			}).setLngLat([user.longitude, user.latitude]).addTo(currentMap);
 
 			markers.push(marker);
 		}

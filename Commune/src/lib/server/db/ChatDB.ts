@@ -8,14 +8,16 @@ import type { ChatMessage } from '$lib/data/chat';
  */
 export async function loadConversation(
 	conversationId: string
-): Promise<ChatMessage[]> {
+): Promise<ChatMessage[]>
+{
 	const rows = await db
 		.select()
 		.from(chatMessage)
 		.where(eq(chatMessage.conversationId, conversationId))
 		.orderBy(asc(chatMessage.sentAt));
 
-	return rows.map((row) => ({
+	return rows.map((row) => 
+	({
 		id: row.id,
 		senderId: row.senderId,
 		recipientId: row.recipientId,
@@ -27,15 +29,18 @@ export async function loadConversation(
 /**
  * Persist a single outgoing message.
  */
-export async function saveMessage(payload: {
+export async function saveMessage(payload:
+{
 	id: string;
 	conversationId: string;
 	senderId: string;
 	recipientId: string;
 	text: string;
 	sentAt: string;
-}): Promise<void> {
-	await db.insert(chatMessage).values({
+}): Promise<void>
+{
+	await db.insert(chatMessage).values(
+	{
 		id: payload.id,
 		conversationId: payload.conversationId,
 		senderId: payload.senderId,

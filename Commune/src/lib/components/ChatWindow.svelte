@@ -5,7 +5,7 @@
 	import type { ChatMessage } from '$lib/data/chat';
 	import type { MapUser } from '$lib/data/fakeUsers';
 
-    import { clickOutside } from '$lib/actions/ClickOutside';
+	import { clickOutside } from '$lib/actions/ClickOutside';
 
 	let {
 		map,
@@ -49,7 +49,8 @@
 
 		geometryVersion += 1;
 
-		onGeometryChange?.({
+		onGeometryChange?.(
+		{
 			contactId: contact.id,
 			version: geometryVersion,
 			center: {
@@ -92,7 +93,8 @@
 
 		const point = map.project([contact.longitude, contact.latitude]);
 
-		position = {
+		position =
+		{
 			x: point.x,
 			y: point.y
 		};
@@ -121,7 +123,8 @@
 			return;
 		}
 
-		const events: Array<keyof maplibregl.MapEventType> = [
+		const events: Array<keyof maplibregl.MapEventType> =
+		[
 			'move',
 			'zoom',
 			'rotate',

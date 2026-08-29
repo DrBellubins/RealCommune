@@ -17,7 +17,8 @@
 
 	onMount(() =>
 	{
-		map = new maplibregl.Map({
+		map = new maplibregl.Map(
+		{
 			container,
 			style: styleJson as unknown as StyleSpecification,
 			center: [0, 0],
