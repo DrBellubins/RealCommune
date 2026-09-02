@@ -67,14 +67,10 @@
 	function queueGeometryReport()
 	{
 		if (typeof window === 'undefined')
-		{
 			return;
-		}
 
 		if (geometryReportFrameId !== null)
-		{
 			cancelAnimationFrame(geometryReportFrameId);
-		}
 
 		geometryReportFrameId = requestAnimationFrame(() =>
 		{
@@ -107,9 +103,7 @@
 		const text = draft.trim();
 
 		if (!text)
-		{
 			return;
-		}
 
 		onSend(text);
 		draft = '';
@@ -135,25 +129,19 @@
 		updatePosition();
 
 		for (const eventName of events)
-		{
 			map.on(eventName, updatePosition);
-		}
 
 		return () =>
 		{
 			for (const eventName of events)
-			{
 				map.off(eventName, updatePosition);
-			}
 		};
 	});
 
 	$effect(() =>
 	{
 		if (!chatWindowElement || !contact)
-		{
 			return;
-		}
 
 		const observer = new ResizeObserver(() =>
 		{
@@ -172,9 +160,7 @@
 	onDestroy(() =>
 	{
 		if (geometryReportFrameId !== null)
-		{
 			cancelAnimationFrame(geometryReportFrameId);
-		}
 
 		onGeometryChange?.(null);
 		draft = '';
