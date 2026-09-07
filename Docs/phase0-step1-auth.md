@@ -128,8 +128,7 @@ type MapUserRow =
 
 export function toMapUser(row: MapUserRow): MapUser
 {
-	return
-	{
+	return {
 		id: row.id,
 		name: row.name,
 		role: row.role ?? 'member',
@@ -371,8 +370,7 @@ export const load: PageServerLoad = async (event) =>
 
 	const me = event.locals.user;
 
-	return
-	{
+	return {
 		me:
 		{
 			id: me.id,

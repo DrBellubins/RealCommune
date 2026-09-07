@@ -1,4 +1,5 @@
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { user } from './auth.schema';
 
 export const task = sqliteTable('task',
 {
@@ -20,3 +21,12 @@ export const chatMessage = sqliteTable('chatMessage',
 });
 
 export * from './auth.schema';
+
+export const userProfile = sqliteTable('userProfile',
+{
+	userId: text('user_id')
+		.primaryKey()
+		.references(() => user.id, { onDelete: 'cascade' }),
+	role: text('role').notNull().default('member'),
+	isEventOrganizer: integer('is_event_organizer').notNull().default(0)
+});
